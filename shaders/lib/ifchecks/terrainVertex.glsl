@@ -375,7 +375,7 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                             #ifdef COLORED_LIGHT
                                 lightVarying = 3.0,
                             #endif
-                            lmCoord.x = 0.87, specB = 3.08, mat = 162.0,
+                            lmCoord.x = 0.87, specB = 3.05, mat = 162.0,
                             //mipmapDisabling = 1.0,
                             color.rgb = vec3(0.69, 0.65, 0.6);
                         else if (mc_Entity.x == 11008) // Sea Lantern
@@ -383,7 +383,7 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                                 lightVarying = 4.0,
                             #endif
                             specR = 3.1, specG = 0.75,
-                            lmCoord.x = 0.85, specB = 16.04,
+                            lmCoord.x = 0.85, specB = 16.025,
                             mat = 17000.0, color.rgb = vec3(1.5, 0.67, 2.9),
                             quarterNdotUfactor = 0.0, mipmapDisabling = 1.0;
                         else if (mc_Entity.x == 11012) // Magma Block
@@ -423,7 +423,7 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                                 lightVarying = 3.0,
                             #endif
                             mat = 17000.0, color.rgb = vec3(1.54, 1.0, 1.15),
-                            specR = 12.065, lmCoord.x = 0.87, specB = 16.0001, mipmapDisabling = 1.0;
+                            specR = 12.065, lmCoord.x = 0.87, specB = 16.00008, mipmapDisabling = 1.0;
                         else if (mc_Entity.x == 11032) // Beacon
                             #ifdef COLORED_LIGHT
                                 lightVarying = 4.0,
@@ -438,6 +438,9 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                             #endif
                             specR = 1.0, lmCoord.x = 0.88, mat = 180.0;
                         else if (mc_Entity.x == 11038) // Froglight+
+                            #ifdef COLORED_LIGHT
+                                lightVarying = 1.0,
+                            #endif
                             lmCoord.x = 0.7, specB = 7.0001, quarterNdotUfactor = 0.0;
                     }
                 }
@@ -527,7 +530,7 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                                 #else
                                     float lightFactor = 1.0;
                                 #endif
-                                specB = 20.0002 + 0.7 * lightFactor;
+                                specB = 15.0002 + 0.3 * lightFactor;
                                 mat = 17000, color.rgb = vec3(1.11, 0.8, 1.0 + lightFactor * 0.07);
                             #endif
                             lmCoord.x = clamp(lmCoord.x, 0.0, 0.9);
@@ -831,6 +834,8 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                 lightVarying = 4.0;
             else if (mc_Entity.x == 11036) // End Rod
                 lightVarying = 4.0;
+            else if (mc_Entity.x == 11038) // Froglight+
+                lightVarying = 1.0;
             else if (mc_Entity.x == 11048) // Redstone Torch
                 lightVarying = 2.0;
         }

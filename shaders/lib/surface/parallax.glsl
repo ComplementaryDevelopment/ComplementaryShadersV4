@@ -1,6 +1,6 @@
 vec4 ReadNormal(vec2 coord) {
     coord = fract(coord) * vTexCoordAM.pq + vTexCoordAM.st;
-	return texture2DGradARB(normals, coord, dcdx, dcdy);
+	return textureGrad(normals, coord, dcdx, dcdy);
 }
 
 void GetParallaxCoord(float parallaxFade, inout vec2 newCoord, inout float parallaxDepth) {
@@ -61,7 +61,7 @@ float GetParallaxShadow(float parallaxFade, vec2 coord, vec3 lightVec, mat3 tbn,
                 float currentHeight = height + parallaxdir.z * step * i;
                 vec2 parallaxCoord = fract(newvTexCoord + parallaxdir.xy * i * step) * 
                                      vTexCoordAM.pq + vTexCoordAM.st;
-                float offsetHeight = texture2DGradARB(normals, parallaxCoord, dcdx, dcdy).a;
+                float offsetHeight = textureGrad(normals, parallaxCoord, dcdx, dcdy).a;
                 #ifdef PARALLAX
                     if (i == parallaxD32) height = parallaxDepth;
                 #endif

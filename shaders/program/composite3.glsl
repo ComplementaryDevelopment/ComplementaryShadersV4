@@ -32,8 +32,12 @@ uniform mat4 gbufferProjection;
 	uniform ivec2 eyeBrightnessSmooth;
 #endif
 
-#if DOF == 1 && !(defined NETHER_BLUR && defined NETHER)
+#if DOF == 1 && !(defined NETHER_BLUR && defined NETHER) && DOF_FOCUS == 0
 	uniform float centerDepthSmooth;
+#endif
+
+#if DOF == 1 && !(defined NETHER_BLUR && defined NETHER) && DOF_FOCUS > 0
+	uniform float far, near;
 #endif
 
 //Optifine Constants//
@@ -87,6 +91,9 @@ vec3 GetBlur(vec3 color, float z) {
 		coc = max(coc, 0.0);
 	#else
 		// Depth Of Field
+		#if DOF_FOCUS > 0
+			float centerDepthSmooth = (far * (DOF_FOCUS - near)) / (DOF_FOCUS * (far - near));
+		#endif
 		float coc = max(abs(z - centerDepthSmooth) * 0.125 * DOF_STRENGTH - 0.0001, 0.0);
 	#endif
 		coc = coc / sqrt(coc * coc + 0.1);

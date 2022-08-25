@@ -12,7 +12,7 @@ void GetMaterials(out float smoothness, out float metalness, out float f0, out f
 	#endif
 
 	#ifdef NORMAL_MAPPING
-		normalMap = texture2DGradARB(normals, newCoord, dcdx, dcdy).rgba;
+		normalMap = textureGrad(normals, newCoord, dcdx, dcdy).rgba;
 
 		normalMap.xyz += vec3(0.5, 0.5, 0.0);
 		normalMap.xyz = pow(normalMap.xyz, vec3(NORMAL_MULTIPLIER));

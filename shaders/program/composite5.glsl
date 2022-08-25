@@ -205,7 +205,7 @@ vec2 GetLightPos() {
 //Program//
 void main() {
     vec2 newTexCoord = texCoord;
-	if (isEyeInWater == 1.0) UnderwaterDistort(newTexCoord);
+	if (isEyeInWater == 1) UnderwaterDistort(newTexCoord);
 
 	vec2 filmGrainCoord = texCoord * vec2(viewWidth, viewHeight) / 512.0;
 	vec3 filmGrain = texture2D(noisetex, filmGrainCoord).rgb;

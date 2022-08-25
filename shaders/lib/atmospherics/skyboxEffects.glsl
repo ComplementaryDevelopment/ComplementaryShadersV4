@@ -46,7 +46,7 @@
 		float noiseMultiplier = CLOUD_THICKNESS * 0.125;
 		float scattering = 0.5 * pow(cosS * 0.5 * (2.0 * sunVisibility - 1.0) + 0.5, 6.0);
 
-		float cloudHeightFactor = max(1.07 - 0.001 * eyeAltitude, 0.0);
+		float cloudHeightFactor = max(1.11 - 0.0015 * eyeAltitude, 0.0);
 		cloudHeightFactor *= cloudHeightFactor;
 		float cloudHeight = CLOUD_HEIGHT * cloudHeightFactor * 0.5;
 

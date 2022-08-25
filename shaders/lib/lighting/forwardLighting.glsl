@@ -115,6 +115,9 @@ void GetLighting(inout vec3 albedo, inout vec3 shadow, inout vec3 lightAlbedo, v
 					shadowPos.z -= bias;
 					shadow = GetShadow(shadowPos, offset, water, doSubsurface);
 
+					float extraSideLight = 1.0;
+					shadow *= (1.0 + extraSideLight) - extraSideLight * quarterNdotU;
+
 					#if defined PROJECTED_CAUSTICS && defined WATER_CAUSTICS && defined OVERWORLD && !defined GBUFFERS_WATER
 						if (isEyeInWater == 0) {
 							water = float(water > 0.99);
@@ -195,7 +198,7 @@ void GetLighting(inout vec3 albedo, inout vec3 shadow, inout vec3 lightAlbedo, v
 				if (isEyeInWater == 1) ambientCol *= pow(lightmap.y, 2.5);
 			#endif
 			
-			vec3 lightingCol = pow(lightCol, vec3(1.0 + sunVisibility * 2.0 - timeBrightness));
+			vec3 lightingCol = pow(lightCol, vec3(1.0 + sunVisibility * 1.5 - 0.5 * timeBrightness));
 			#ifdef SHADOWS
 				lightingCol *= (1.0 + 0.5 * leaves);
 			#else
@@ -242,7 +245,7 @@ void GetLighting(inout vec3 albedo, inout vec3 shadow, inout vec3 lightAlbedo, v
 			if (subsurface > 0.001) {
 				float VdotL = clamp(dot(normalize(viewPos.xyz), lightVec), 0.0, 1.0);
 				
-				vec3 subsurfaceGlow = (5.5 + 22.0 * leaves) * (1.0 - fakeShadow) * shadowTime * fullShadow * pow(VdotL, 10.0);
+				vec3 subsurfaceGlow = (5.5 + 8.0 * leaves) * (1.0 - fakeShadow) * shadowTime * fullShadow * pow(VdotL, 10.0);
 				subsurfaceGlow *= 1.0 - rainStrengthS * 0.68;
 				albedo.rgb += max(albedo.g * normalize(sqrt((albedo.rgb + vec3(0.001)) * lightCol)) * subsurfaceGlow, vec3(0.0));
 			}
@@ -265,11 +268,6 @@ void GetLighting(inout vec3 albedo, inout vec3 shadow, inout vec3 lightAlbedo, v
 
 	#ifdef DYNAMIC_SHADER_LIGHT
 		float handLight = min(float(heldBlockLightValue2 + heldBlockLightValue), 15.0) / 15.0;
-
-		if (heldItemId == 12001 || heldItemId2 == 12001) // Lava Bucket
-			handLight = 1.0;
-		if (heldItemId == 12002 || heldItemId2 == 12002) // Optifine Item Emissives
-			handLight = min(handLight + 0.65, 1.0);
 
 		float handLightFactor = 1.0 - min(DYNAMIC_LIGHT_DISTANCE * handLight, lViewPos) / (DYNAMIC_LIGHT_DISTANCE * handLight);
 		#ifdef GBUFFERS_WATER

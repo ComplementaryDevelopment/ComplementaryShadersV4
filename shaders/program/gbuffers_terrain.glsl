@@ -250,10 +250,11 @@ void main() {
 		#endif
 
 		#ifdef PARALLAX
-			float skipParallax = float(blockEntityId == 63 || material == 4.0); // Fixes signs and lava
+			vec2 coordDif = abs(newCoord - texCoord);
+			float skipParallax = 100000.0 * (coordDif.x + coordDif.y);
 			if (skipParallax < 0.5) {
 				GetParallaxCoord(parallaxFade, newCoord, parallaxDepth);
-				if (mipmapDisabling < 0.25) albedo = texture2DGradARB(texture, newCoord, dcdx, dcdy) * vec4(color.rgb, 1.0);
+				if (mipmapDisabling < 0.25) albedo = textureGrad(texture, newCoord, dcdx, dcdy) * vec4(color.rgb, 1.0);
 				else 					    albedo = texture2DLod(texture, newCoord, 0) * vec4(color.rgb, 1.0);
 			}
 		#endif
@@ -513,13 +514,7 @@ void main() {
 							#endif
 								vec2 rainPos = worldPos.xz + cameraPosition.xz;
 
-								skymapMod = lmCoord.y * 16.0 - 15.5;
-								#if REFLECTION_RAIN_COVERAGE < 100
-									float lmCX = pow(lmCoord.x * 1.3, 50.0);
-									skymapMod = max(skymapMod - lmCX, 0.0);
-								#else
-									skymapMod = max(skymapMod, 0.0);
-								#endif
+								skymapMod = max(lmCoord.y * 16.0 - 15.5, 0.0);
 
 								float puddleSize = 0.0025;
 								skymapMod *= GetPuddles(rainPos * puddleSize);
@@ -782,6 +777,7 @@ void main() {
 	#endif
 	
 	color = gl_Color;
+	if (color.a < 0.1) color.a = 1.0;
 	
 	upVec = normalize(gbufferModelView[1].xyz);
 

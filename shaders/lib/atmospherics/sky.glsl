@@ -11,7 +11,9 @@ vec3 GetSkyColor(vec3 lightCol, float NdotU, vec3 nViewPos, bool isReflection) {
     float absNdotU = abs(NdotU);
 
     vec3 skyColor2 = skyColor * skyColor;
-    vec3 sky = mix(skyColor * 0.6, skyColor2, absNdotU) * (0.5 + 0.5 * sunVisibility) * skyMult;
+
+    vec3 sky = mix(sqrt1(skyColor) * 0.47, skyColor2 * 0.9, absNdotU);
+    sky = sky * (0.5 + 0.5 * sunVisibility) * skyMult;
 
     #ifdef ONESEVEN
         sky = vec3(0.812, 0.741, 0.674) * 0.5;
@@ -37,7 +39,7 @@ vec3 GetSkyColor(vec3 lightCol, float NdotU, vec3 nViewPos, bool isReflection) {
     meColor *= meColor;
     meColor *= meFactor * meFactor * NdotS;
 
-    vec3 finalSky = mix(sky * (1.0 - lightmix), lightCol * sqrt(lightCol), lightmix);
+    vec3 finalSky = mix(sky * (1.0 - pow2(lightmix)), lightCol * sqrt(lightCol), lightmix);
     
     vec3 nightSky = ambientNight * ambientNight * (3.25 + 2.25 * max(sqrt1(NdotU), 0.0));
     nightSky *= mix(SKY_NIGHT, 1.0, sunVisibility);

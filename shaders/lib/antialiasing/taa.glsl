@@ -4,25 +4,26 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
 
 #include "/lib/util/reprojection.glsl"
 
-vec2 neighbourhoodOffsets[8] = vec2[8](
-							   	   vec2(-1.0, -1.0),
-							  	   vec2( 0.0, -1.0),
-							  	   vec2( 1.0, -1.0),
-							  	   vec2(-1.0,  0.0),
-							   	   vec2( 1.0,  0.0),
-							  	   vec2(-1.0,  1.0),
-							  	   vec2( 0.0,  1.0),
-							  	   vec2( 1.0,  1.0)
-						  );
+ivec2 neighbourhoodOffsets[8] = ivec2[8](
+	ivec2(-1, -1),
+	ivec2( 0, -1),
+	ivec2( 1, -1),
+	ivec2(-1,  0),
+	ivec2( 1,  0),
+	ivec2(-1,  1),
+	ivec2( 0,  1),
+	ivec2( 1,  1)
+);
 
-void NeighbourhoodClamping(vec3 color, inout vec3 tempColor, vec2 view, float depth, inout float edge) {
+void NeighbourhoodClamping(vec3 color, inout vec3 tempColor, float depth, inout float edge) {
 	vec3 minclr = color, maxclr = color;
 
-	for(int i = 0; i < 8; i++) {
-		vec2 offset = neighbourhoodOffsets[i] * view;
-		float depthCheck = texture2D(depthtex1, texCoord + offset).r;
-		if (abs(GetLinearDepth(depthCheck) - GetLinearDepth(depth)) > 0.03) edge = 1.0;
-		vec3 clr = texture2DLod(colortex1, texCoord + offset, 0).rgb;
+	ivec2 texelCoord = ivec2(gl_FragCoord.xy);
+
+	for (int i = 0; i < 8; i++) {
+		float depthCheck = texelFetch(depthtex1, texelCoord + neighbourhoodOffsets[i], 0).r;
+		if (abs(GetLinearDepth(depthCheck) - GetLinearDepth(depth)) > 0.09) edge = 0.25;
+		vec3 clr = texelFetch(colortex1, texelCoord + neighbourhoodOffsets[i], 0).rgb;
 		minclr = min(minclr, clr); maxclr = max(maxclr, clr);
 	}
 
@@ -47,25 +48,24 @@ void TAA(inout vec3 color, inout vec4 temp) {
 	}
 
 	float edge = 0.0;
-	NeighbourhoodClamping(color, tempColor, 1.0 / view, depth, edge);
+	NeighbourhoodClamping(color, tempColor, depth, edge);
 	
 	vec2 velocity = (texCoord - prvCoord.xy) * view;
 
 	float blendFactor = float(prvCoord.x > 0.0 && prvCoord.x < 1.0 &&
 	                          prvCoord.y > 0.0 && prvCoord.y < 1.0);
 	#if AA == 2 || AA == 3
-		float blendVariable = 0.5;
-		float blendConstant = 0.4;
-		float blendMinimum = 0.2;
+		float blendMinimum = 0.3;
 	#elif AA == 4
-		float blendVariable = 0.3;
-		float blendConstant = 0.6;
 		float blendMinimum = 0.6;
 	#endif
-	float lengthVelocity = length(velocity * 2.0);
-	blendFactor *= max(exp(-lengthVelocity) * blendVariable + blendConstant - lengthVelocity * edge * 20.0, blendMinimum);
+	float blendVariable = 0.25;
+	float blendConstant = 0.65;
+
+	float lengthVelocity = length(velocity) * 50;
+	blendFactor *= max(exp(-lengthVelocity) * blendVariable + blendConstant - lengthVelocity * edge, blendMinimum);
 	
 	color = mix(color, tempColor, blendFactor);
 	temp = vec4(temp.r, color);
-	//if (edge > 0.5) color.rgb = vec3(1.0, 0.0, 1.0);
+	//if (edge > 0.05) color.rgb = vec3(1.0, 0.0, 1.0);
 }

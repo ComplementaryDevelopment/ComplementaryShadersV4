@@ -204,7 +204,7 @@ void main() {
 		#ifdef PARALLAX
 			if (skipParallax < 0.5) {
 				GetParallaxCoord(parallaxFade, newCoord, parallaxDepth);
-				albedo = texture2DGradARB(texture, newCoord, dcdx, dcdy) * color;
+				albedo = textureGrad(texture, newCoord, dcdx, dcdy) * color;
 			}
 		#endif
 	#endif

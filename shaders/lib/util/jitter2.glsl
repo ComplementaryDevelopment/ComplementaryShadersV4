@@ -15,6 +15,6 @@ vec2 jitterOffsets[8] = vec2[8]( // IntenseTAA Jitter
 							   
 vec2 TAAJitter(vec2 coord, float w) {
 	vec2 offset = jitterOffsets[int(framemod8)] * (w / vec2(viewWidth, viewHeight));
-	offset *= max(1.0 - velocity * 200.0, 0.0);
+	offset *= max(1.0 - velocity * 400.0, 0.0);
 	return coord + offset;
 }

@@ -57,7 +57,7 @@ vec3 SampleFilteredShadow(vec3 shadowPos, float offset, inout float water) {
 
 float InterleavedGradientNoise() {
 	float n = 52.9829189 * fract(0.06711056 * gl_FragCoord.x + 0.00583715 * gl_FragCoord.y);
-	return fract(n + frameCounter / 8.0);
+	return fract(n + 1.61803398875 * mod(float(frameCounter), 3600.0));
 }
 
 vec3 SampleTAAFilteredShadow(vec3 shadowPos, float offset, inout float water, int doSubsurface) {

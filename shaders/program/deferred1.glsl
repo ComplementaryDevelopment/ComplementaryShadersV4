@@ -121,39 +121,53 @@ float GetLinearDepth(float depth) {
 }
 
 #ifdef AO
-float GetAmbientOcclusion(float z) {
-	float ao = 0.0;
-	float tw = 0.0;
-	float lz = GetLinearDepth(z);
+    vec2 OffsetDist(float x, int s) {
+        float n = fract(x * 1.414) * 3.1415;
+        return pow2(vec2(cos(n), sin(n)) * x / s);
+    }
 
-	#if AO_QUALITY == 1 && AA > 1
-		vec2 halfView = vec2(viewWidth, viewHeight) / 2.0;
-		vec2 coord1 = (floor(texCoord * halfView + 1.0)) / halfView;
-		vec2 coord2 = texCoord * 0.5;
-	#else
-		vec2 coord1 = texCoord;
-		vec2 coord2 = texCoord;
-	#endif
-	
-	for(int i = 0; i < 4; i++) {
-		vec2 offset = aoOffsets[i] / vec2(viewWidth, viewHeight);
-		float samplez = GetLinearDepth(texture2D(depthtex0, coord1 + offset * 2.0).r);
-		float wg = max(1.0 - 2.0 * far * abs(lz - samplez), 0.0);
-		ao += texture2D(colortex4, coord2 + offset).r * wg;
-		tw += wg;
-	}
-	ao /= tw;
-	if(tw < 0.0001) ao = texture2D(colortex4, coord2).r;
+    float DoAmbientOcclusion(float linearZ0, float dither) {
+        float ao = 0.0;
 
-	float aoStrength = AO_STRENGTH;
+		#if AA > 1
+			int samples = 12 * AO_QUALITY;
 
-	#if AO_QUALITY == 2 || (AO_QUALITY == 1 && AA <= 1)
-		aoStrength *= 0.75;
-	#endif
-	
-	//return pow(texture2D(colortex4, coord2).r, AO_STRENGTH);
-	return pow(ao, aoStrength);
-}
+			float ditherAnimate = 1.61803398875 * mod(float(frameCounter), 3600.0);
+			dither = fract(dither + ditherAnimate);
+		#else
+			int samples = 24 * AO_QUALITY;
+		#endif
+			
+		float farMinusNear = far - near;
+        
+        float sampleDepth = 0.0, angle = 0.0, dist = 0.0;
+        float fovScale = gbufferProjection[1][1] / 1.37;
+        float distScale = max(farMinusNear * linearZ0 + near, 3.0);
+        vec2 scale = vec2(0.4 / aspectRatio, 0.5) * fovScale / distScale;
+
+        for (int i = 1; i <= samples; i++) {
+            vec2 offset = OffsetDist(i + dither, samples) * scale;
+            if (i % 2 == 0) offset.y = -offset.y;
+
+            vec2 coord1 = texCoord + offset;
+            vec2 coord2 = texCoord - offset;
+
+            sampleDepth = GetLinearDepth(texture2D(depthtex0, coord1).r);
+            float aosample = farMinusNear * (linearZ0 - sampleDepth) * 2.0;
+            angle = clamp(0.5 - aosample, 0.0, 1.0);
+            dist = clamp(0.5 * aosample - 1.0, 0.0, 1.0);
+
+            sampleDepth = GetLinearDepth(texture2D(depthtex0, coord2).r);
+            aosample = farMinusNear * (linearZ0 - sampleDepth) * 2.0;
+            angle += clamp(0.5 - aosample, 0.0, 1.0);
+            dist += clamp(0.5 * aosample - 1.0, 0.0, 1.0);
+            
+            ao += clamp(angle + dist, 0.0, 1.0);
+        }
+        ao /= samples;
+        
+        return pow(ao, AO_STRENGTH_NEW);
+    }
 #endif
 
 #if SELECTION_MODE == 2 && defined ADV_MAT
@@ -253,7 +267,7 @@ void main() {
 		vec3 worldPos = ViewToWorld(viewPos.xyz);
 	
 		#ifdef AO
-			float ao = clamp(GetAmbientOcclusion(z), 0.0, 1.0);
+			float ao = clamp(DoAmbientOcclusion(GetLinearDepth(z), dither), 0.0, 1.0);
 			float ambientOcclusion = ao;
 		#endif
 
@@ -538,8 +552,7 @@ void main() {
 		if (isEyeInWater == 1) {
 			NdotU = max(dot(normalize(viewPos.xyz), upVec), 0.0);
 			color.rgb = mix(color.rgb, 0.8 * pow(underwaterColor.rgb * (1.0 - blindFactor), vec3(2.0)), 1.0 - NdotU*NdotU);
-		}
-		if (isEyeInWater == 2) {
+		} else if (isEyeInWater == 2) {
 			//duplicate 792763950
 			#ifndef VANILLA_UNDERLAVA_COLOR
 				vec3 lavaFogColor = vec3(0.6, 0.35, 0.15);

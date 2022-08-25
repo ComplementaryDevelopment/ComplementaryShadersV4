@@ -147,8 +147,9 @@ void main() {
 			#endif
 			vlP = vl;
 
-			vec3 dayLightCol = lightCol*lightCol*lightCol;
-			vec3 nightLightCol = lightCol * lightCol * 20.0;
+			vec3 lightCol2 = lightCol * lightCol;
+			vec3 dayLightCol = lightCol2 * 0.73;
+			vec3 nightLightCol = lightCol2 * 20.0;
 			vec3 vlColor = mix(nightLightCol, dayLightCol, sunVisibility);
 			//duplicate 98765
 			vec3 weatherSky = weatherCol * weatherCol;

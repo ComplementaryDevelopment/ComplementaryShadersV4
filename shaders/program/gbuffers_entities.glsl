@@ -157,14 +157,15 @@ void main() {
 		
 		#if defined PARALLAX || defined SELF_SHADOW
 			float parallaxFade = clamp((dist - PARALLAX_DISTANCE) / 32.0, 0.0, 1.0);
-			float skipParallax = itemFrameOrPainting;
+			vec2 coordDif = abs(newCoord - texCoord);
+			float skipParallax = itemFrameOrPainting + 100000.0 * (coordDif.x + coordDif.y);
 			float parallaxDepth = 1.0;
 		#endif
 		
 		#ifdef PARALLAX
 			if (skipParallax < 0.5) {
 				GetParallaxCoord(parallaxFade, newCoord, parallaxDepth);
-				albedo = texture2DGradARB(texture, newCoord, dcdx, dcdy) * color;
+				albedo = textureGrad(texture, newCoord, dcdx, dcdy) * color;
 			}
 		#endif
 	#endif

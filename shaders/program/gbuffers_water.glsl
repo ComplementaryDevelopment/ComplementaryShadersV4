@@ -120,12 +120,6 @@ float cloudtime = frametime;
 	vec3 lightVec = sunVec;
 #endif
 
-#if WATER_TYPE == 0
-float waterBump = WATER_BUMP * 1.2;
-#else
-float waterBump = WATER_BUMP * 0.20;
-#endif
-
 //Common Functions//
 float GetLuminance(vec3 color) {
 	return dot(color,vec3(0.299, 0.587, 0.114));
@@ -149,7 +143,7 @@ float GetWaterHeightMap(vec3 worldPos, vec3 nViewPos) {
 				+ noiseS.g * WATER_NOISE_3 
 				+ (noiseS.b - noiseS.a) * WATER_NOISE_4;
 
-	noise *= waterBump * (lmCoord.y*0.9 + 0.1) * 0.35;
+	noise *= WATER_BUMP * (lmCoord.y*0.9 + 0.1) * 0.42;
 
     return noise;
 }
@@ -307,17 +301,16 @@ void main() {
 							  tangent.y, binormal.y, normal.y,
 							  tangent.z, binormal.z, normal.z);
 
-		if (water + moddedfluidX > 0.5) {
-			float halfNdotUish = abs(dot(newNormal, upVec));
-			waterBump *= 0.25 + 0.75 * halfNdotUish;
-
-			normalMap = GetWaterNormal(worldPos, nViewPos, viewVector, lViewPos);
-			newNormal = clamp(normalize(normalMap * tbnMatrix), vec3(-1.0), vec3(1.0));
-			
-			// Iris' Broken Water Normal Workaround
-			float VdotN = dot(nViewPos, normalize(normal));
-			if (VdotN > 0.0) newNormal = -newNormal;
-		}
+		#ifdef WATER_WAVES
+			if (water + moddedfluidX > 0.5) {
+				normalMap = GetWaterNormal(worldPos, nViewPos, viewVector, lViewPos);
+				newNormal = clamp(normalize(normalMap * tbnMatrix), vec3(-1.0), vec3(1.0));
+				
+				// Iris' Broken Water Normal Workaround
+				float VdotN = dot(nViewPos, normalize(normal));
+				if (VdotN > 0.0) newNormal = -newNormal;
+			}
+		#endif
 
 		#ifdef ADV_MAT
 			#ifdef NORMAL_MAPPING
@@ -334,7 +327,7 @@ void main() {
 						if (normalMap != vec3(0.0, 0.0, 1.0))
 					#else
 						vec2 newCoord = vTexCoord.st * vTexCoordAM.pq + vTexCoordAM.st;
-						normalMap = texture2DGradARB(normals, newCoord, dcdx, dcdy).xyz;
+						normalMap = textureGrad(normals, newCoord, dcdx, dcdy).xyz;
 						normalMap += vec3(0.5, 0.5, 0.0);
 						normalMap = pow(normalMap, vec3(NORMAL_MULTIPLIER));
 						normalMap -= vec3(0.5, 0.5, 0.0);
@@ -588,10 +581,10 @@ void main() {
 								#endif
 								specular = GGX(newNormal, nViewPos, lightVec, smoothnessRTX, 0.02, 0.025 * sunVisibility + 0.05);
 								specular *= waterSpecMult * (0.15 + 0.85 * sunVisibility);
+							#endif
 
-								if (waterBump >= 0.275) specular += stylisedGGX(newNormal, normal, nViewPos, lightVec, 0.0);
-							#else
-								if (waterBump >= 0.275) specular = stylisedGGX(newNormal, normal, nViewPos, lightVec, 0.0);
+							#ifdef WATER_WAVES
+								specular += stylisedGGX(newNormal, normal, nViewPos, lightVec, 0.0);
 							#endif
 
 							#ifdef COLORED_SHADOWS

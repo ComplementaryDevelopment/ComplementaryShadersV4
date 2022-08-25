@@ -69,8 +69,8 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
 void main(){
     #if !defined CLOUDS && defined OVERWORLD
 		vec4 albedo = vec4(1.0, 1.0, 1.0, texture2D(texture, texCoord.xy).a);
-		vec3 texture = texture2D(texture, texCoord.xy).rgb;
-		albedo.rgb = pow(albedo.rgb * texture, vec3(2.2));
+		vec3 cloudTex = texture2D(texture, texCoord.xy).rgb;
+		albedo.rgb = pow(albedo.rgb * cloudTex, vec3(2.2));
 		
 		float timeBrightnessS = 1.0 - timeBrightness;
 		timeBrightnessS = 1.0 - timeBrightnessS * timeBrightnessS;
@@ -78,7 +78,7 @@ void main(){
 		float sunVisibility2 = sunVisibility * sunVisibility;
 		if (rainStrengthS > 0.0) {
 			vec3 rainColor = weatherCol*weatherCol * (0.002 + 0.03 * timeBrightnessS + 0.02 * sunVisibility2);
-			albedo.rgb = mix(albedo.rgb, rainColor * texture, rainStrengthS);
+			albedo.rgb = mix(albedo.rgb, rainColor * cloudTex, rainStrengthS);
 		}
 		if (albedo.a > 0.1) {
 			albedo.a = CLOUD_OPACITY;
@@ -95,8 +95,8 @@ void main(){
 		vec3 worldPos = ViewToWorld(viewPos);
 
 		#ifdef FOG1
-			float lWorldPos = length(worldPos.xz);
-			float cloudDistance = 290.0;
+			float lWorldPos = max(abs(worldPos.x), abs(worldPos.z));
+			float cloudDistance = 375.0;
 			cloudDistance = clamp((cloudDistance - lWorldPos) / cloudDistance, 0.0, 1.0);
 			if (cloudDistance < 0.00001) discard;
 			albedo.a *= min(cloudDistance * 3.0, 1.0);
@@ -128,7 +128,7 @@ void main(){
 		if (height < 134.0) {
 			cloudHeightFactor = clamp(height - 127.85, 0.0, 5.0) / 5.0;
 			doFancyClouds = true;
-		} else if (height < 198.0 && height > 190.0) {
+		} else if (height < 199.0 && height > 190.0) {
 			cloudHeightFactor = clamp(height - 191.85, 0.0, 5.0) / 5.0;
 			doFancyClouds = true;
 		}
@@ -192,7 +192,10 @@ void main(){
 		uniform float viewHeight;
 	#endif
 
+	uniform vec3 cameraPosition;
+
 	uniform mat4 gbufferModelView;
+	uniform mat4 gbufferModelViewInverse;
 #endif
 
 //Common Variables//
@@ -237,7 +240,12 @@ void main(){
 		sunVec = normalize((gbufferModelView * vec4(vec3(-sin(ang), cos(ang) * sunRotationData) * 2000.0, 1.0)).xyz);
 
 		upVec = normalize(gbufferModelView[1].xyz);
-		gl_Position = ftransform();
+			
+		vec4 position = gbufferModelViewInverse * gl_ModelViewMatrix * gl_Vertex;
+		position.xz -= vec2(88.0);
+		float height = position.y + cameraPosition.y;
+		if (height > 193.0) position.y += 2.0;
+		gl_Position = gl_ProjectionMatrix * gbufferModelView * position;
 
 		#if AA > 1
 			gl_Position.xy = TAAJitter(gl_Position.xy, gl_Position.w);

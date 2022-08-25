@@ -81,11 +81,6 @@ void main() {
 
 				float handLight = min(float(heldBlockLightValue2 + heldBlockLightValue), 15.0) / 15.0;
 
-				if (heldItemId == 12001 || heldItemId2 == 12001) // Lava Bucket
-					handLight = 1.0;
-				if (heldItemId == 12002 || heldItemId2 == 12002) // Optifine Item Emissives
-					handLight = min(handLight + 0.65, 1.0);
-
 				float handLightFactor = 1.0 - min(DYNAMIC_LIGHT_DISTANCE * handLight, lViewPos) / (DYNAMIC_LIGHT_DISTANCE * handLight);
 				float finalHandLight = handLight * handLightFactor;
 				lightmap.x = max(finalHandLight * 0.95, lightmap.x);

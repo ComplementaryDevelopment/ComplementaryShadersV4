@@ -319,7 +319,7 @@ if (mat > 100.5 && mat < 10000.0) {
                 if (material == 180.0) { // End Rod
                     if (lAlbedoP > 1.3) {
                         smoothness = 0.0;
-                        emissive = 0.45;
+                        emissive = 0.4;
                     }
                 }
                 else if (material == 184.0) { // Rails
