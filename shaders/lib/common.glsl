@@ -126,6 +126,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #define SELF_SHADOW_ANGLE 2.0 //[0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0]
     #define PARALLAX_QUALITY 128 //[16 32 64 128 256 512]
     #define PARALLAX_DISTANCE 16 //[0 8 16 24 32 40 48 56 64 72 80 88 96 104 112 120 128]
+    //#define PARALLAX_SLOPE_NORMALS
     #define DIRECTIONAL_LIGHTMAP
     #define DIRECTIONAL_LIGHTMAP_STRENGTH 3.0 //[7.0 6.5 6.0 5.5 5.0 4.5 4.0 3.5 3.0 2.5 2.0 1.5 1.0]
     #define NORMAL_MULTIPLIER 1.00 //[0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00 4.25 4.50 4.75 5.00]
@@ -436,6 +437,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #if !defined COMPATIBILITY_MODE && RP_SUPPORT == 1
         #define COMPBR
         #undef PARALLAX
+        #undef PARALLAX_SLOPE_NORMALS
         #undef SELF_SHADOW
         #undef DIRECTIONAL_LIGHTMAP
         #if !defined GENERATED_NORMALS
@@ -449,6 +451,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #ifndef NORMAL_MAPPING
         #undef GENERATED_NORMALS
         #undef PARALLAX
+        #undef PARALLAX_SLOPE_NORMALS
         #undef SELF_SHADOW
         #undef DIRECTIONAL_LIGHTMAP
     #endif
@@ -459,6 +462,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
             #undef GENERATED_NORMALS
             #undef NORMAL_MAPPING
             #undef PARALLAX
+        #undef PARALLAX_SLOPE_NORMALS
             #undef SELF_SHADOW
             #undef DIRECTIONAL_LIGHTMAP
         #endif

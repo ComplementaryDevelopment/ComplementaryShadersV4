@@ -159,12 +159,14 @@ void main() {
 			float parallaxFade = clamp((dist - PARALLAX_DISTANCE) / 32.0, 0.0, 1.0);
 			vec2 coordDif = abs(newCoord - texCoord);
 			float skipParallax = itemFrameOrPainting + 100000.0 * (coordDif.x + coordDif.y);
-			float parallaxDepth = 1.0;
+			vec3 parallaxTraceCoordDepth = vec3(newCoord, 1.0);
+			vec2 parallaxLocalCoord = vTexCoord.st;
+			float parallaxTexDepth = 1.0;
 		#endif
 		
 		#ifdef PARALLAX
 			if (skipParallax < 0.5) {
-				GetParallaxCoord(parallaxFade, newCoord, parallaxDepth);
+				parallaxLocalCoord = GetParallaxCoord(parallaxFade, newCoord, parallaxTexDepth, parallaxTraceCoordDepth);
 				albedo = textureGrad(texture, newCoord, dcdx, dcdy) * color;
 			}
 		#endif
@@ -363,7 +365,7 @@ void main() {
 				#endif
 				
 				if (doParallax > 0.5) {
-					parallaxShadow = GetParallaxShadow(parallaxFade, newCoord, lightVec, tbnMatrix, parallaxDepth, normalMap.a);
+					parallaxShadow = GetParallaxShadow(parallaxFade, parallaxLocalCoord, lightVec, tbnMatrix, parallaxTraceCoordDepth.z, normalMap.a);
 					NdotL *= parallaxShadow;
 				}
 			#endif
