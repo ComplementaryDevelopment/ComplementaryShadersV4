@@ -6,11 +6,8 @@ vec4 ReadNormal(vec2 coord) {
 vec2 GetParallaxCoord(float parallaxFade, inout vec2 newCoord, inout float texDepth, inout vec3 traceCoordDepth) {
     if (parallaxFade >= 1.0) return vTexCoord.st;
 
-    //vec2 coord = vTexCoord.st;
     float invParallaxQuality = 1.0 / PARALLAX_QUALITY;
-	
     vec3 normalMap = ReadNormal(vTexCoord.st).xyz * 2.0 - 1.0;
-	
     float normalCheck = normalMap.x + normalMap.y;
     float minHeight = 1.0 - invParallaxQuality;
 
@@ -60,7 +57,6 @@ float GetParallaxShadow(float parallaxFade, vec2 coord, vec3 lightVec, mat3 tbn,
 
     vec3 parallaxdir = tbn * lightVec;
     parallaxdir.xy *= 0.2 * SELF_SHADOW_ANGLE * PARALLAX_DEPTH;
-    //vec2 newvTexCoord = (coord - vTexCoordAM.st) / vTexCoordAM.pq;
     float step = 1.28 / PARALLAX_QUALITY;
     float height = normalDepth;
 
@@ -81,7 +77,6 @@ float GetParallaxShadow(float parallaxFade, vec2 coord, vec3 lightVec, mat3 tbn,
         #endif
 
         parallaxshadow *= clamp(1.0 - (offsetHeight - currentHeight) * 40.0, 0.0, 1.0);
-        //if (parallaxshadow < 0.01) break;
     }
     
     return mix(parallaxshadow, 1.0, parallaxFade);

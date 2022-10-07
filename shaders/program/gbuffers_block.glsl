@@ -266,8 +266,16 @@ void main() {
 									  tangent.y, binormal.y, normal.y,
 									  tangent.z, binormal.z, normal.z);
 
-				if (normalMap.x > -0.999 && normalMap.y > -0.999)
+				if (normalMap.x > -0.999 && normalMap.y > -0.999) {
+					#ifdef PARALLAX_SLOPE_NORMALS
+						float slopeThreshold = max(1.0 / PARALLAX_QUALITY, 1.0/255.0);
+						if (parallaxTexDepth - parallaxTraceCoordDepth.z > slopeThreshold) {
+							normalMap.xyz = GetParallaxSlopeNormal(parallaxLocalCoord, parallaxTraceCoordDepth.z, viewVector);
+						}
+					#endif
+					
 					newNormal = clamp(normalize(normalMap.xyz * tbnMatrix), vec3(-1.0), vec3(1.0));
+				}
 			#endif
 		#endif
 
