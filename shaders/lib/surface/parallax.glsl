@@ -29,7 +29,7 @@ vec2 GetParallaxCoord(float parallaxFade, inout vec2 newCoord, inout float texDe
     vec2 localCoord;
     int i = 0;
 
-    for (; i < PARALLAX_QUALITY && texDepth - 1e-6 < 1.0 - float(i) * invParallaxQuality; i++) {
+    for (; i < PARALLAX_QUALITY && texDepth <= 1.0 - float(i) * invParallaxQuality; i++) {
         localCoord = vTexCoord.st + float(i) * interval;
         texDepth = ReadNormal(localCoord).a;
     }
@@ -38,7 +38,7 @@ vec2 GetParallaxCoord(float parallaxFade, inout vec2 newCoord, inout float texDe
     traceCoordDepth.xy -= pI * interval;
     traceCoordDepth.z -= pI * invParallaxQuality;
 
-    localCoord = fract(vTexCoord.st + float(i) * interval);
+    localCoord = fract(vTexCoord.st + pI * interval);
     newCoord = localCoord * vTexCoordAM.pq + vTexCoordAM.st;
     return localCoord;
 }
