@@ -456,6 +456,9 @@ option.PARALLAX_QUALITY.comment=Adjusts the quality of parallax occlusion mappin
 option.PARALLAX_DISTANCE=Parallax Distance
 option.PARALLAX_DISTANCE.comment=Adjusts how far parallax occlusion mapping and self shadows can be rendered. §e[*]§r Only for labPBR or SEUS PBR resource packs.
 
+option.PARALLAX_SLOPE_NORMALS=Slope-Normals
+option.PARALLAX_SLOPE_NORMALS.comment=Generates proper normals for the slopes between parallax pixels. §e[*]§r Only for labPBR or SEUS PBR resource packs. §e[*]§r Requires Parallax.
+
 option.DIRECTIONAL_LIGHTMAP=Directional Lightmap
 option.DIRECTIONAL_LIGHTMAP.comment=Adds normal mapping to vanilla lighting. §c[-]§r Can cause the lightmap to look glitchy. §e[*]§r Only for labPBR or SEUS PBR resource packs.
 

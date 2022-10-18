@@ -129,7 +129,7 @@ uniform sampler2D texture;
 	uniform sampler2D colortex9;
 #endif
 
-#ifdef COMPBR
+#if defined COMPBR || (defined PARALLAX && defined PARALLAX_SLOPE_NORMALS)
 	uniform ivec2 atlasSize;
 #endif
 
@@ -246,14 +246,16 @@ void main() {
 		
 		#if defined PARALLAX || defined SELF_SHADOW
 			float parallaxFade = clamp((dist - PARALLAX_DISTANCE) / 32.0, 0.0, 1.0);
-			float parallaxDepth = 1.0;
+			vec3 parallaxTraceCoordDepth = vec3(newCoord, 1.0);
+			vec2 parallaxLocalCoord = vTexCoord.st;
+			float parallaxTexDepth = 1.0;
 		#endif
 
 		#ifdef PARALLAX
 			vec2 coordDif = abs(newCoord - texCoord);
 			float skipParallax = 100000.0 * (coordDif.x + coordDif.y);
 			if (skipParallax < 0.5) {
-				GetParallaxCoord(parallaxFade, newCoord, parallaxDepth);
+				parallaxLocalCoord = GetParallaxCoord(parallaxFade, newCoord, parallaxTexDepth, parallaxTraceCoordDepth);
 				if (mipmapDisabling < 0.25) albedo = textureGrad(texture, newCoord, dcdx, dcdy) * vec4(color.rgb, 1.0);
 				else 					    albedo = texture2DLod(texture, newCoord, 0) * vec4(color.rgb, 1.0);
 			}
@@ -395,12 +397,18 @@ void main() {
 
 				#ifdef GENERATED_NORMALS
 					if (cauldron < 0.5)
-					AutoGenerateNormals(normalMap, albedoP, delta);
+						AutoGenerateNormals(normalMap, albedoP, delta);
 
-	
 					if (normalMap != vec4(0.0, 0.0, 1.0, 1.0))
 				#endif
 				{
+					#ifdef PARALLAX_SLOPE_NORMALS
+						float slopeThreshold = max(1.0 / PARALLAX_QUALITY, 1.0/255.0);
+						if (parallaxTexDepth - parallaxTraceCoordDepth.z > slopeThreshold) {
+							normalMap.xyz = GetParallaxSlopeNormal(parallaxLocalCoord, parallaxTraceCoordDepth.z, viewVector);
+						}
+					#endif
+
 					if (normalMap.x > -0.999 && normalMap.y > -0.999)
 						newNormal = clamp(normalize(normalMap.xyz * tbnMatrix), vec3(-1.0), vec3(1.0));
 				}
@@ -489,7 +497,7 @@ void main() {
 					doParallax = float(NdotL > 0.0);
 				#endif
 				if (doParallax > 0.5) {
-					parallaxShadow = GetParallaxShadow(parallaxFade, newCoord, lightVec, tbnMatrix, parallaxDepth, normalMap.a);
+					parallaxShadow = GetParallaxShadow(parallaxFade, parallaxLocalCoord, lightVec, tbnMatrix, parallaxTraceCoordDepth.z, normalMap.a);
 				}
 			#endif
 
