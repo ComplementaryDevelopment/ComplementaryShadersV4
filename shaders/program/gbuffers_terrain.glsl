@@ -35,7 +35,7 @@ varying vec4 color;
 
 	#if !defined COMPBR || defined NORMAL_MAPPING || defined NOISY_TEXTURES || defined SNOW_MODE
 		varying vec2 vTexCoord;
-		#if defined GENERATED_NORMALS || defined NOISY_TEXTURES
+		#if defined GENERATED_NORMALS || defined NOISY_TEXTURES || defined SNOW_MODE
 			varying vec2 vTexCoordL;
 		#endif
 	#endif
