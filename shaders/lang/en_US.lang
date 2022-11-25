@@ -306,6 +306,17 @@ value.NETHER_REFRACT.3=Intense
 option.GLINT_BRIGHTNESS=Enchantment Glint Brightness
 option.GLINT_BRIGHTNESS.comment=Adjusts the intensity of enchantment glint on enchanted items.
 
+option.FROGLIGHT_EMISSION=Froglight Emission Brightness
+option.FROGLIGHT_EMISSION.comment=Adjusts the intensity of the bloom for froglights.
+
+option.FROGLIGHT_SAT=Froglight Saturation
+option.FROGLIGHT_SAT.comment=Adjusts the emissive saturation type for froglights. Colored: Adds a slight color overlay. Saturated: Adds saturation to colored overlay. Vibrant: Adds even more saturation & colored bloom. Normal: No changes to saturation or color.
+value.FROGLIGHT_SAT.1=Colored
+value.FROGLIGHT_SAT.2=Saturated
+value.FROGLIGHT_SAT.3=Vibrant
+value.FROGLIGHT_SAT.4=Normal
+
+
 option.NIGHT_VISION=Night Vision Style
 option.NIGHT_VISION.comment=Changes how the night vision status effect works.
 value.NIGHT_VISION.1=Normal

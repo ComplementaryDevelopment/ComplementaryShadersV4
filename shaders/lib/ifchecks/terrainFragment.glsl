@@ -138,7 +138,7 @@ if (mat > 100.5 && mat < 10000.0) {
                 if (material == 156.0) { // Campfires, Powered Lever
                     if (albedo.g + albedo.b > albedo.r * 2.3 && albedo.g > 0.38 && albedo.g > albedo.b * 0.9) emissive = 0.09;
                     if (albedo.r > albedo.b * 3.0 || albedo.r > 0.8) emissive = 0.65;
-                    emissive *= max(1.0 - albedo.b + albedo.r, 0.0);
+                    emissive *= max(1.0 - albedo.b + albedo.r, 0.0)*5;
                     emissive *= lAlbedoP;
                 }
                 else if (material == 160.0) { // Cauldron, Hopper, Anvils
@@ -194,12 +194,12 @@ if (mat > 100.5 && mat < 10000.0) {
                 else if (material == 162.0) { // Glowstone, Magma Block
 					#include "/lib/other/mipLevel.glsl"
 
-                    emissive = pow(lAlbedoP, specB) * fract(specB) * 20.0;
+                    emissive = pow(lAlbedoP, specB) * fract(specB) * 30.0;
 
                     emissive += miplevel * 2.5;
                 }
             } else {
-                if (material == 164.0) { // Chorus Plant, Chorus Flower Age 5
+                if (material == 164.0) { // Chorus Pt, Chorus Flower Age 5
                     if (albedo.g > 0.55 && albedo.r < albedo.g * 1.1) {
                         emissive = 1.0;
                     }
@@ -299,6 +299,7 @@ if (mat > 100.5 && mat < 10000.0) {
                     }
                 }
                 else if (material == 176.0) { // Beacon
+				
                     #ifndef WORLD_CURVATURE
                         vec3 comPos = fract(worldPos.xyz + cameraPosition.xyz);
                     #else
@@ -314,14 +315,16 @@ if (mat > 100.5 && mat < 10000.0) {
                         else albedo.rgb *= 0.78;
                         emissive = 1.5;
                     }
+				
                 }
             } else {
                 if (material == 180.0) { // End Rod
                     if (lAlbedoP > 1.3) {
                         smoothness = 0.0;
-                        emissive = 0.4;
+                        emissive = 0.6;
                     }
                 }
+
                 else if (material == 184.0) { // Rails
                     if (albedo.r > albedo.g * 2.0 + albedo.b) {
                         if (lAlbedoP > 0.45) { // Rail Redstone Lit
@@ -337,10 +340,20 @@ if (mat > 100.5 && mat < 10000.0) {
                         }
                     }
                 }
+				else if (material > 186.5 && material < 190.0) { // froglights
+					float brightFactor = max(lAlbedoP - 1.5, 0.0);
+                    float ore = max(max(0.175 + specG, 0.0), brightFactor);
+                    emissive *= sqrt4(ore) * 1.5;
+                    metalness = 0.0;
+				}
             }
         }
     }
+} else {
+	
 }
+
+
 
 #ifdef EMISSIVE_NETHER_ORES
     if (specB < -9.0) {
