@@ -439,8 +439,8 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                             specR = 1.0, lmCoord.x = 0.88, mat = 180.0;
                         else if (mc_Entity.x == 11037) { // Froglight (ochre)
 							#ifdef COLORED_LIGHT
-                                lightVarying = 4.0,
-                            #endif
+								lightVarying = 4.0,
+							#endif
 							lmCoord.x = 0.2, mat = 189.0, quarterNdotUfactor = 0.0;
 							#if FROGLIGHT_SAT == 1 // colored
 								specB = 0.05*FROGLIGHT_EMISSION,
@@ -460,8 +460,8 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
 						}
 						else if (mc_Entity.x == 11038) { // Froglight (verdant)
 							#ifdef COLORED_LIGHT
-                                lightVarying = 4.0,
-                            #endif
+								lightVarying = 4.0,
+							#endif
 							lmCoord.x = 0.2, mat = 188.0, quarterNdotUfactor = 0.0;
 							#if FROGLIGHT_SAT == 1 // colored
 								specB = 0.05*FROGLIGHT_EMISSION,
@@ -481,8 +481,8 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
 						}
 						else if (mc_Entity.x == 11039) { // Froglight (pearlescent)
 							#ifdef COLORED_LIGHT
-                                lightVarying = 4.0,
-                            #endif
+								lightVarying = 4.0,
+							#endif
 							lmCoord.x = 0.2, quarterNdotUfactor = 0.0, mat = 189.0;
 							#if FROGLIGHT_SAT == 1 // colored
 								specB = 0.05*FROGLIGHT_EMISSION,
@@ -559,7 +559,7 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                             #ifdef COLORED_LIGHT
                                 lightVarying = 3.0,
                             #endif
-                            lmCoord.x = min(lmCoord.x, 0.87), specB = 3.4, mat = 20000.0, color.rgb = vec3(1.0, 0.0, 0.0),
+                            lmCoord.x = 0.87, specB = 3.4, mat = 20000.0, color.rgb = vec3(1.0, 0.0, 0.0),
                             #ifndef REFLECTION_SPECULAR
                                 specB -= fract(specB) * 0.85,
                             #endif
