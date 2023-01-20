@@ -96,7 +96,7 @@ uniform sampler2D texture;
 	uniform sampler2D colortex9;
 #endif
 
-#if defined NOISY_TEXTURES || defined GENERATED_NORMALS
+#if defined NOISY_TEXTURES || defined GENERATED_NORMALS || (defined PARALLAX && defined PARALLAX_SLOPE_NORMALS)
 	uniform ivec2 atlasSize;
 #endif
 
@@ -198,12 +198,14 @@ void main() {
 		#if defined PARALLAX || defined SELF_SHADOW
 			float parallaxFade = clamp((dist - PARALLAX_DISTANCE) / 32.0, 0.0, 1.0);
 			float skipParallax = signBlockEntity;
-			float parallaxDepth = 1.0;
+			vec3 parallaxTraceCoordDepth = vec3(newCoord, 1.0);
+			vec2 parallaxLocalCoord = vTexCoord.st;
+			float parallaxTexDepth = 1.0;
 		#endif
 		
 		#ifdef PARALLAX
 			if (skipParallax < 0.5) {
-				GetParallaxCoord(parallaxFade, newCoord, parallaxDepth);
+				parallaxLocalCoord = GetParallaxCoord(parallaxFade, newCoord, parallaxTexDepth, parallaxTraceCoordDepth);
 				albedo = textureGrad(texture, newCoord, dcdx, dcdy) * color;
 			}
 		#endif
@@ -264,8 +266,16 @@ void main() {
 									  tangent.y, binormal.y, normal.y,
 									  tangent.z, binormal.z, normal.z);
 
-				if (normalMap.x > -0.999 && normalMap.y > -0.999)
+				if (normalMap.x > -0.999 && normalMap.y > -0.999) {
+					#ifdef PARALLAX_SLOPE_NORMALS
+						float slopeThreshold = max(1.0 / PARALLAX_QUALITY, 1.0/255.0);
+						if (parallaxTexDepth - parallaxTraceCoordDepth.z > slopeThreshold) {
+							normalMap.xyz = GetParallaxSlopeNormal(parallaxLocalCoord, parallaxTraceCoordDepth.z, viewVector);
+						}
+					#endif
+					
 					newNormal = clamp(normalize(normalMap.xyz * tbnMatrix), vec3(-1.0), vec3(1.0));
+				}
 			#endif
 		#endif
 
@@ -312,7 +322,7 @@ void main() {
 				#endif
 				
 				if (doParallax > 0.5) {
-					parallaxShadow = GetParallaxShadow(parallaxFade, newCoord, lightVec, tbnMatrix, parallaxDepth, normalMap.a);
+					parallaxShadow = GetParallaxShadow(parallaxFade, parallaxLocalCoord, lightVec, tbnMatrix, parallaxTraceCoordDepth.z, normalMap.a);
 					NdotL *= parallaxShadow;
 				}
 			#endif

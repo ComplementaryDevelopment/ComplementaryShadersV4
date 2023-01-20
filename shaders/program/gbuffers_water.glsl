@@ -604,7 +604,7 @@ void main() {
 						#endif
 
 						skyReflection *= skyLightFactor;
-						#if defined CLOUDS || defined AURORA
+						#if defined WATER_TRANSLUCENT_CLOUD_REF && (defined CLOUDS || defined AURORA)
 							float cosT = dot(normalize(skyReflectionPos), upVec);
 							#ifdef AURORA
 								skyReflection += skyLightFactor * DrawAurora(skyReflectionPos, dither, 8, cosT);
@@ -652,14 +652,20 @@ void main() {
 						skyReflection *= pow2(lightmap.y * lightmap.y);
 					#endif
 				}
+			#else
+				skyReflection = albedo.rgb * fresnel * 2.0;
 			#endif
 
 			#if defined REFLECTION || defined WATER_TRANSLUCENT_SKY_REF
+				#ifndef REFLECTION
+					fresnel *= 0.5;
+				#endif
+
 				reflection.rgb = max(mix(skyReflection, reflection.rgb, reflection.a), vec3(0.0));
 				
 				albedo.rgb = mix(albedo.rgb, reflection.rgb, fresnel);
 			#else
-				albedo.rgb *= 1.0 + 2.0 * fresnel;
+				albedo.rgb *= 1.0 + 3.0 * fresnel;
 			#endif
 		}
 

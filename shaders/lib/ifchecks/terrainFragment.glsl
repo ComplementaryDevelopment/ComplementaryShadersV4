@@ -29,7 +29,7 @@ if (mat > 100.5 && mat < 10000.0) {
                         emissive = min(pow2(lAlbedoP * lAlbedoP) * emissive * 3.0, 0.3);
                     #endif
                 }
-                if (material == 130.0) { // Sculk++
+                else if (material == 130.0) { // Sculk++
                     emissive *= max((albedo.b - albedo.r) - 0.1, 0.0) * 0.5
                               + 100.0 * max(albedo.g - albedo.b, 0.0) * float(albedo.r < albedo.b - 0.1)
                               ;
@@ -145,7 +145,7 @@ if (mat > 100.5 && mat < 10000.0) {
                     if (color.r < 0.99) { // Cauldron Water
                         cauldron = 1.0, smoothness = 1.0, metalness = 0.0;
                         skymapMod = lmCoord.y * 0.475 + 0.515;
-                        #if defined REFLECTION_RAIN && defined RAIN_REF_BIOME_CHECK
+                        #ifdef REFLECTION_RAIN
                             noRain = 1.0;
                         #endif
                         #if WATER_TYPE == 0
@@ -321,6 +321,11 @@ if (mat > 100.5 && mat < 10000.0) {
                         smoothness = 0.0;
                         emissive = 0.4;
                     }
+                }
+                else if (material == 182.0) { // Froglight-
+                    emissive = 0.02 + 0.7 * pow2(pow2(pow2(1.0 - length(vTexCoord.xy - 0.5))));
+                    
+                    albedo.rgb = pow(albedo.rgb, vec3(1.0 + pow(0.35 * dot(albedo.rgb, vec3(1.0)), 32.0)));
                 }
                 else if (material == 184.0) { // Rails
                     if (albedo.r > albedo.g * 2.0 + albedo.b) {

@@ -1,15 +1,20 @@
 if (mc_Entity.x ==  31 || mc_Entity.x ==   6 || mc_Entity.x ==  59 || 
     mc_Entity.x == 175 || mc_Entity.x == 176 || mc_Entity.x ==  83 || 
-    mc_Entity.x == 104 || mc_Entity.x == 105 || mc_Entity.x == 11019) // Foliage++
+    mc_Entity.x == 104 || mc_Entity.x == 105 || mc_Entity.x == 11019) { // Foliage++
     #ifdef NOISY_TEXTURES
-        noiseVarying = 1001.0,
+        noiseVarying = 1001.0;
     #endif
     #ifndef SHADOWS
-        normal = upVec, color.rgb *= 0.9,
+        float timeBrightnessSL = timeBrightness * lmCoord.y;
+        normal = mix(normal, upVec, vec3(max(0.3 + 0.7 * (1.0 - timeBrightnessSL), 0.65)));
+        color.rgb *= 1.3 - 0.4 * timeBrightnessSL - 0.4 * pow2(pow2(pow2(1.0 - timeBrightnessSL)));
+        mat = 5.0;
     #else
-        mat = 1.0,
+        mat = 1.0;
     #endif
-    lmCoord.x = clamp(lmCoord.x, 0.0, 0.87), quarterNdotUfactor = 0.0;
+    lmCoord.x = clamp(lmCoord.x, 0.0, 0.87);
+    quarterNdotUfactor = 0.0;
+}
    
 if (mc_Entity.x == 18 || mc_Entity.x == 9600 || mc_Entity.x == 9100) // Leaves, Vine, Lily Pad
     #ifdef COMPBR
@@ -441,7 +446,7 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                             #ifdef COLORED_LIGHT
                                 lightVarying = 1.0,
                             #endif
-                            lmCoord.x = 0.7, specB = 7.0001, quarterNdotUfactor = 0.0;
+                            lmCoord = vec2(0.0), specB = 0.007, mat = 182.0, quarterNdotUfactor = 0.0;
                     }
                 }
             }

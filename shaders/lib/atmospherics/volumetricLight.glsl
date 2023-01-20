@@ -204,7 +204,8 @@ vec3 GetVolumetricRays(float depth0, float depth1, vec3 vlAlbedo, float dither, 
 		#else
 			#if LIGHT_SHAFT_MODE == 2
 				if (isEyeInWater == 0) {
-					float vlPower = max(1.75 - rainStrengthS + sunVisibility*0.25, 1.0);
+					float vlPower = 1.75 - rainStrengthS + sunVisibility*0.25;
+					if (vlPower < 1.0) vlPower = 1.0;
 					vl = pow(vl, vec3(vlPower));
 				}
 			#else

@@ -127,14 +127,18 @@ vec3 GetMetalCol(float f0) {
 }
 
 vec3 GetSpecularHighlight(float smoothness, float metalness, float f0, vec3 specularColor,
-                          vec3 rawAlbedo, vec3 shadow, vec3 normal, vec3 viewPos) {    
-    if (dot(shadow, shadow) < 0.001) return vec3(0.0);
+                          vec3 rawAlbedo, vec3 shadow, vec3 newNormal, vec3 viewPos) {
+    float specCheck = dot(shadow, shadow);
+    #ifdef NORMAL_MAPPING
+        specCheck *= dot(normal, lightVec);
+    #endif
+    if (specCheck < 0.001) return vec3(0.0);
 
     #ifdef END
         smoothness *= 0.0;
     #endif
 
-    float specular = GGX(normal, normalize(viewPos), lightVec, smoothness, f0,
+    float specular = GGX(newNormal, normalize(viewPos), lightVec, smoothness, f0,
                          0.01 * sunVisibility + 0.06);
     specular *= sqrt1inv(rainStrengthS);
 

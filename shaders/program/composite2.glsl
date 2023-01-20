@@ -24,10 +24,7 @@ uniform sampler2D depthtex1;
 
 //Common Functions//
 vec3 MotionBlur(vec3 color, float z, float dither) {
-	
-	float hand = float(z < 0.56);
-
-	if (hand < 0.5) {
+	if (z > 0.56) {
 		float mbwg = 0.0;
 		vec2 doublePixel = 2.0 / vec2(viewWidth, viewHeight);
 		vec3 mblur = vec3(0.0);
@@ -48,8 +45,8 @@ vec3 MotionBlur(vec3 color, float z, float dither) {
 		vec2 velocity = (currentPosition - previousPosition).xy;
 		velocity = velocity / (1.0 + length(velocity)) * MOTION_BLUR_STRENGTH * 0.02;
 		
-		vec2 coord = texCoord.st - velocity * (3.5 + dither);
-		for(int i = 0; i < 9; i++, coord += velocity) {
+		vec2 coord = texCoord - velocity * (3.5 + dither);
+		for (int i = 0; i < 9; i++, coord += velocity) {
 			vec2 coordb = clamp(coord, doublePixel, 1.0 - doublePixel);
 			mblur += texture2DLod(colortex0, coordb, 0).rgb;
 			mbwg += 1.0;
@@ -57,8 +54,7 @@ vec3 MotionBlur(vec3 color, float z, float dither) {
 		mblur /= mbwg;
 
 		return mblur;
-	}
-	else return color;
+	} else return color;
 }
 
 
@@ -70,10 +66,10 @@ void main() {
     vec3 color = texture2D(colortex0,texCoord).rgb;
 	
 	#ifdef MOTION_BLUR
-	float z = texture2D(depthtex1, texCoord.st).x;
-	float dither = Bayer64(gl_FragCoord.xy);
+		float z = texture2D(depthtex1, texCoord).x;
+		float dither = Bayer64(gl_FragCoord.xy);
 
-	color = MotionBlur(color, z, dither);
+		color = MotionBlur(color, z, dither);
 	#endif
 	
 	/*DRAWBUFFERS:0*/

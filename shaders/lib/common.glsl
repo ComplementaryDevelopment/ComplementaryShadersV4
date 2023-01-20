@@ -98,6 +98,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #define REFLECTION
     #define REFLECTION_TRANSLUCENT
     #define WATER_TRANSLUCENT_SKY_REF
+    #define WATER_TRANSLUCENT_CLOUD_REF
     #define WATER_CAUSTICS
     //#define PROJECTED_CAUSTICS
     //#define WATER_ABSORPTION
@@ -124,6 +125,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #define PARALLAX_DEPTH 0.60 //[0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
     #define SELF_SHADOW
     #define SELF_SHADOW_ANGLE 2.0 //[0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0]
+    #define PARALLAX_SLOPE_NORMALS
     #define PARALLAX_QUALITY 128 //[16 32 64 128 256 512]
     #define PARALLAX_DISTANCE 16 //[0 8 16 24 32 40 48 56 64 72 80 88 96 104 112 120 128]
     #define DIRECTIONAL_LIGHTMAP
@@ -436,6 +438,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #if !defined COMPATIBILITY_MODE && RP_SUPPORT == 1
         #define COMPBR
         #undef PARALLAX
+        #undef PARALLAX_SLOPE_NORMALS
         #undef SELF_SHADOW
         #undef DIRECTIONAL_LIGHTMAP
         #if !defined GENERATED_NORMALS
@@ -449,6 +452,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #ifndef NORMAL_MAPPING
         #undef GENERATED_NORMALS
         #undef PARALLAX
+        #undef PARALLAX_SLOPE_NORMALS
         #undef SELF_SHADOW
         #undef DIRECTIONAL_LIGHTMAP
     #endif
@@ -459,6 +463,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
             #undef GENERATED_NORMALS
             #undef NORMAL_MAPPING
             #undef PARALLAX
+            #undef PARALLAX_SLOPE_NORMALS
             #undef SELF_SHADOW
             #undef DIRECTIONAL_LIGHTMAP
         #endif
@@ -486,7 +491,7 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
         #endif
     #endif
 
-    #if defined ADV_MAT && !defined COMPATIBILITY_MODE && defined COLORED_LIGHT_DEFINE
+    #if defined ADV_MAT && !defined COMPATIBILITY_MODE && defined COLORED_LIGHT_DEFINE && MC_VERSION >= 11605
         #define COLORED_LIGHT
         #undef RANDOM_BLOCKLIGHT
     #endif
@@ -586,6 +591,8 @@ Complementary Shaders by EminGT, based on BSL Shaders by Capt Tatsu
     #ifdef WATER_REFRACT
     #endif
     #ifdef BLOCKLIGHT_FLICKER
+    #endif
+    #ifdef WATER_TRANSLUCENT_CLOUD_REF
     #endif
 
 //Very Common Variables//
