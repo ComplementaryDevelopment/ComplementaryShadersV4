@@ -81,6 +81,7 @@ uniform float screenBrightness;
 uniform float viewWidth, viewHeight;
 
 uniform ivec2 eyeBrightnessSmooth;
+uniform ivec2 atlasSize;
 
 uniform vec3 fogColor;
 uniform vec3 cameraPosition;
@@ -124,10 +125,6 @@ uniform sampler2D texture;
 	uniform ivec2 eyeBrightness;
 
 	uniform sampler2D colortex9;
-#endif
-
-#if defined COMPBR || (defined PARALLAX && defined PARALLAX_SLOPE_NORMALS)
-	uniform ivec2 atlasSize;
 #endif
 
 #if MC_VERSION >= 11900
@@ -249,7 +246,6 @@ void main() {
 		#endif
 
 		#ifdef PARALLAX
-			vec2 coordDif = abs(newCoord - texCoord);
 			float skipParallax = float(blockEntityId == 63 || material == 4.0); // Fixes signs and lava
 			if (skipParallax < 0.5) {
 				parallaxLocalCoord = GetParallaxCoord(parallaxFade, newCoord, parallaxTexDepth, parallaxTraceCoordDepth);

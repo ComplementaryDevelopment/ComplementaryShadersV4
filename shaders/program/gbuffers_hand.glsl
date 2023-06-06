@@ -46,6 +46,7 @@ uniform float screenBrightness;
 uniform float viewWidth, viewHeight;
 
 uniform ivec2 eyeBrightnessSmooth;
+uniform ivec2 atlasSize;
 
 uniform vec3 fogColor;
 uniform vec3 cameraPosition;
@@ -77,10 +78,6 @@ uniform sampler2D texture;
 
 #if MC_VERSION >= 11900
 	uniform float darknessLightFactor;
-#endif
-
-#if defined PARALLAX && defined PARALLAX_SLOPE_NORMALS
-	uniform ivec2 atlasSize;
 #endif
 
 //Common Variables//

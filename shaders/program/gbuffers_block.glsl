@@ -72,6 +72,7 @@ uniform float screenBrightness;
 uniform float viewWidth, viewHeight;
 
 uniform ivec2 eyeBrightnessSmooth;
+uniform ivec2 atlasSize;
 
 uniform vec3 fogColor;
 uniform vec3 cameraPosition;
@@ -94,10 +95,6 @@ uniform sampler2D texture;
 
 #ifdef COLORED_LIGHT
 	uniform sampler2D colortex9;
-#endif
-
-#if defined NOISY_TEXTURES || defined GENERATED_NORMALS || (defined PARALLAX && defined PARALLAX_SLOPE_NORMALS)
-	uniform ivec2 atlasSize;
 #endif
 
 #if MC_VERSION >= 11900

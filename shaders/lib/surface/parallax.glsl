@@ -83,7 +83,7 @@ float GetParallaxShadow(float parallaxFade, vec2 coord, vec3 lightVec, mat3 tbn,
 }
 
 #ifdef PARALLAX_SLOPE_NORMALS
-    vec3 GetParallaxSlopeNormal(in vec2 texCoord, in float traceDepth, in vec3 viewDir) {
+    vec3 GetParallaxSlopeNormal(vec2 texCoord, float traceDepth, vec3 viewDir) {
         vec2 atlasPixelSize = 1.0 / atlasSize;
         float atlasAspect = atlasSize.x / atlasSize.y;
         vec2 atlasCoord = fract(texCoord) * vTexCoordAM.pq + vTexCoordAM.st;
@@ -97,7 +97,7 @@ float GetParallaxShadow(float parallaxFade, vec2 coord, vec3 lightVec, mat3 tbn,
         vec2 stepSign = sign(tex_offset);
         vec2 viewSign = sign(viewDir.xy);
 
-        bool dir = abs(tex_offset.x  * atlasAspect) < abs(tex_offset.y);
+        bool dir = abs(tex_offset.x * atlasAspect) < abs(tex_offset.y);
         vec2 tex_x, tex_y;
 
         if (dir) {

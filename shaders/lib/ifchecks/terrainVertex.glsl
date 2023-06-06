@@ -141,7 +141,7 @@ if (lmCoord.x > 0.99) // Clamp full bright emissives
                             mipmapDisabling = 1.0;
                         else if (mc_Entity.x == 10108) // Dark Oak Log+
                             specR = 2.04;		
-                        else if (mc_Entity.x == 10111) // Birch Planks+, Fletching Table, Loom
+                        else if (mc_Entity.x == 10111) // Birch Planks+, Fletching Table, Loom, Cherry Planks++
                             #ifdef NOISY_TEXTURES
                                 noiseVarying = 0.77,
                             #endif
